@@ -6,3 +6,4 @@
 3.rungcap_mul.py是一个多线程用来跑朱教授的cap.pl程序的。
 
 4.changetoFM.py将FM转换成msatsi反演所需要的数据格式:1分区 2将走向转换成dip direction
+5. multhread.py中包括多线程的简单测试，以及调用filterpicker程序的应用实例。包括单一参数和多
