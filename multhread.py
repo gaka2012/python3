@@ -81,9 +81,39 @@ e2 = time.time()
 print ("并行执行时间：", (e2-e1))
 print (rl)
 
+#以下程序使用多线程多参数调用程序
+#############################################################################################
+import time
+import subprocess
+import numpy as np
+import threading
+from multiprocessing import Pool
 
 
-
+def mulfilter(item):
+    (name2,filterwindow1,longt,tup1,t1,t2)=item #这一步也是必不可少的
+    subprocess.call('cd /home/zhangzhipeng/software/filterpicker/picker;./picker_func_test mer1.sac /home/zhangzhipeng/software/filterpicker/picker/result/%s  %s %s %s %s %s' %(name2,filterwindow1,longt,tup1,t1,t2),shell=True)
+   
+#parameter=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20] #单个参数的多线程参数输入。
+#parameter=[(1,300,300,31,14,10),(2,300,300,31,14,10.5),(3,300,300,31,14.5,10),(4,300,300,31,14.5,10.5)]#多个参数的多线程参数输入。
+#注意是列表中有元组。
+list1=[1,300,300,31,14,10]
+list2=[2,300,300,31,14,10.5]
+list3=[3,300,300,31,14.5,10]
+list4=[4,300,300,31,14.5,10.5] 
+parameter=[]
+parameter.append(tuple(list1)) #将列表转换成元组。
+parameter.append(tuple(list2))
+parameter.append(tuple(list3))
+parameter.append(tuple(list4))
+start=time.time()
+pool=Pool(4)
+rl=pool.map(mulfilter,parameter)
+pool.close()
+pool.join()
+end=time.time()
+inter=end-start
+print (inter)
 
 
 
