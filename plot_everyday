@@ -6,6 +6,13 @@ import matplotlib.pyplot as plt
 from obspy import UTCDateTime
 import numpy as np
 from obspy.core import read
+'''
+本程序会读取/home/zhangzhipeng/11/N08/年/月/日/BHZ。SAC 中的文件（通常有3个分量）
+数据格式是每天的数据存为一个小时，gmt时间是从0点到24点，
+画图是将这24小时的数据分成24个图，时间加上8个小时，即为北京时间。
+最后输出的是/home/zhangzhipeng/11/png中，文件名称是台站/年/月/日
+'''
+
 #1修改1 out_path0
 #2修改2 sac_files
 # data dirs
