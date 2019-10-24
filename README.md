@@ -8,3 +8,5 @@
 4.changetoFM.py将FM转换成msatsi反演所需要的数据格式:1分区 2将走向转换成dip direction
 
 5.multhread.py中包括多线程的简单测试，以及调用filterpicker程序的应用实例。包括单一参数和多
+
+6.plot_evertyday是根据李君师兄的程序改变的，将数据按照一个小时的间隔画图
