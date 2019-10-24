@@ -1,0 +1,70 @@
+#!/usr/bin/python
+# -*- coding:UTF-8 -*-
+
+import os, glob,shutil
+import matplotlib.pyplot as plt
+from obspy import UTCDateTime
+import numpy as np
+from obspy.core import read
+#1修改1 out_path0
+#2修改2 sac_files
+# data dirs
+out_path0  = '/home/zhangzhipeng/11/png'         #年/月/日
+sac_files  = glob.glob('/home/zhangzhipeng/11/N08/*/*/*/*BHZ.SAC') # net/sta/year/mon/day/sac_files
+start_date = UTCDateTime(2019,6,13)
+end_date   = UTCDateTime(2019,9,12)
+
+# stats for stations
+sta_dict = {}
+print('making station dict')
+for sac_file in sac_files:
+    sac_dir = os.path.dirname(sac_file)#去掉文件名，返回目录
+    sacfile = os.path.basename(sac_file)#返回文件名   
+    os.chdir(sac_dir)#切换到指定路径
+    #获取台网，台站，年，julin日，频道 
+    net, sta, year, jday, chn, _ = sacfile.split('.')
+    #存储文件路径名中的年月日
+    codes = []
+    codes = sac_dir.split('/') 
+    mday  = codes[-1] 
+    mon   = codes[-2]
+    year  = codes[-3]   
+    #文件名的gmt时间。
+    date = UTCDateTime("%s-%s-%sT"%(year,mon,mday))
+ 
+    #创建存放生成的图片的路径
+    out_path = os.path.join(out_path0, sta, year,mon)	
+    if not os.path.exists(out_path):
+       os.makedirs(out_path)
+    
+    if date>end_date or date<start_date: 
+        print('time is out of range,please change start_date or end_date')
+        continue
+    if sta not in sta_dict:
+       sta_dict[sta] = [date.date]
+    
+    else:
+       sta_dict[sta].append(date.date)
+
+
+    #按照ENZ的顺序读取3个分量，存储在st中
+    st_3chns = os.path.join(sac_dir, '{}.{}.{}.{}*.BH?.SAC'.format(net, sta, year, jday))
+    st_3chns = sorted(glob.glob(st_3chns))
+    st  = read(st_3chns[0])           # BHE
+    st += read(st_3chns[1])           # BHN
+    st += read(st_3chns[2])           # BHZ
+
+       # plot continuity
+    print('plot station %s: %s-%s-%s'%(sta,year,mon,mday))       
+    #加上8个小时成为北京时间
+    st[0].stats.starttime+=8*3600
+    st[1].stats.starttime+=8*3600
+    st[2].stats.starttime+=8*3600
+    dt = st[0].stats.starttime
+    hur0 = dt.hour-8 
+    #按照第一个分量BHE分量的开始时间画图
+    for numh in range(0,24): 
+        h0   = dt + (hur0+numh)*3600 #h0是从0-23
+        png_file = '%sT%s-%s-%sH%s.png'%(sta,str(h0.year),str(h0.month),str(h0.day),str(h0.hour))
+        st.plot(starttime= h0 , endtime=(h0 + 3600),outfile=png_file)    
+        shutil.move(png_file,out_path)
